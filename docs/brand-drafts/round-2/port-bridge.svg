@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="title desc">
+  <title id="title">Heartbeat Concept E — Port Bridge</title>
+  <desc id="desc">A restrained brand concept showing two service ports joined by a controlled bridge path.</desc>
+  <defs>
+    <pattern id="micro-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#8bc9df" stroke-opacity=".045"/>
+    </pattern>
+
+    <!-- A compact, squared mark: two inward-facing ports and one handoff bridge. -->
+    <g id="bridge-mark">
+      <path d="M30 30H7v160h23" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="round"/>
+      <path d="M230 30h23v160h-23" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="round"/>
+      <path d="M31 110h62l30-30h24l30 30h53" fill="none" stroke="#7dd3fc" stroke-width="18" stroke-linecap="square" stroke-linejoin="bevel"/>
+      <path d="M31 110h62l30-30h24l30 30h53" fill="none" stroke="#0c2b42" stroke-width="5" stroke-linecap="square" stroke-linejoin="bevel"/>
+      <rect x="92" y="100" width="18" height="20" fill="currentColor"/>
+      <rect x="190" y="100" width="18" height="20" fill="currentColor"/>
+      <path d="M123 68h34" stroke="#7dd3fc" stroke-width="8" stroke-linecap="square"/>
+    </g>
+    <g id="bridge-mark-flat">
+      <path d="M30 30H7v160h23 M230 30h23v160h-23 M31 110h62l30-30h24l30 30h53" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="square" stroke-linejoin="bevel"/>
+      <rect x="92" y="100" width="18" height="20" fill="currentColor"/>
+      <rect x="190" y="100" width="18" height="20" fill="currentColor"/>
+      <path d="M123 68h34" stroke="currentColor" stroke-width="8" stroke-linecap="square"/>
+    </g>
+  </defs>
+
+  <rect width="1600" height="900" fill="#06131f"/>
+  <rect x="24" y="24" width="1552" height="852" rx="26" fill="#0b2030" stroke="#2a566e" stroke-width="2"/>
+  <rect x="24" y="24" width="1552" height="852" rx="26" fill="url(#micro-grid)"/>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <text x="84" y="94" fill="#7dd3fc" font-size="18" font-weight="700" letter-spacing="4.6">CONCEPT E / PORT BRIDGE</text>
+    <text x="84" y="128" fill="#7795a9" font-size="16" letter-spacing="2.1">CONTROLLED HANDOFF · SERVICE CONNECTION · CLEAR ROUTING</text>
+
+    <g transform="translate(132 258)">
+      <rect x="0" y="0" width="460" height="380" rx="20" fill="#081a29" stroke="#315f77" stroke-width="2"/>
+      <path d="M42 320H418" stroke="#22465c" stroke-width="2"/>
+      <g transform="translate(120 80) scale(.98)" color="#d9f2fb"><use href="#bridge-mark"/></g>
+      <text x="230" y="350" text-anchor="middle" fill="#7496ab" font-size="14" letter-spacing="3.1">PORTS IN · ROUTE THROUGH · PORTS OUT</text>
+    </g>
+
+    <g transform="translate(794 176)">
+      <g transform="translate(0 2) scale(.24)" color="#7dd3fc"><use href="#bridge-mark"/></g>
+      <text x="92" y="57" fill="#eff9ff" font-size="48" font-weight="700" letter-spacing="-1.2">Heart<tspan fill="#7dd3fc">beat</tspan></text>
+      <path d="M0 106H690" stroke="#4b7890" stroke-opacity=".55" stroke-width="2"/>
+      <text x="0" y="140" fill="#7795a9" font-size="15" letter-spacing="2.7">BRIDGE THE SERVICE. KEEP CONTROL.</text>
+    </g>
+
+    <path d="M794 438H1466" stroke="#2e5870" stroke-width="2"/>
+    <text x="794" y="485" fill="#7795a9" font-size="16" letter-spacing="3.1">SIZE CHECKS</text>
+
+    <g transform="translate(794 522)" text-anchor="middle" color="#d9f2fb">
+      <g transform="translate(0 0) scale(.073)"><use href="#bridge-mark-flat"/></g>
+      <g transform="translate(124 0) scale(.109)"><use href="#bridge-mark-flat"/></g>
+      <g transform="translate(276 0) scale(.145)"><use href="#bridge-mark-flat"/></g>
+      <text x="8" y="106" fill="#90adbe" font-size="14">16 px</text>
+      <text x="148" y="106" fill="#90adbe" font-size="14">24 px</text>
+      <text x="308" y="106" fill="#90adbe" font-size="14">32 px</text>
+    </g>
+
+    <g transform="translate(1238 516)">
+      <text x="0" y="0" fill="#7795a9" font-size="16" letter-spacing="3.1">MONO / REVERSE</text>
+      <rect x="0" y="28" width="112" height="112" rx="18" fill="#f2fbff"/>
+      <g transform="translate(27 45) scale(.265)" color="#0b2030"><use href="#bridge-mark-flat"/></g>
+      <rect x="136" y="28" width="112" height="112" rx="18" fill="#143148"/>
+      <g transform="translate(163 45) scale(.265)" color="#f2fbff"><use href="#bridge-mark-flat"/></g>
+    </g>
+
+    <text x="84" y="830" fill="#37647a" font-size="14" letter-spacing="2.9">VECTOR EXPLORATION · ROUTE / HANDOFF / CONTROL</text>
+    <text x="1514" y="830" text-anchor="end" fill="#37647a" font-size="14" letter-spacing="2.9">HEARTBEAT / 2026</text>
+  </g>
+</svg>

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Heartbeat Concept C — Run Orbit</title>
+  <desc id="desc">A dark navy presentation board showing an orbiting service-node icon around a central control square, paired with the Heartbeat wordmark.</desc>
+
+  <defs>
+    <linearGradient id="orbitGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7dd3fc"/>
+      <stop offset="0.48" stop-color="#2789f4"/>
+      <stop offset="1" stop-color="#1765d1"/>
+    </linearGradient>
+    <linearGradient id="coreGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3ba4ff"/>
+      <stop offset="1" stop-color="#1557bf"/>
+    </linearGradient>
+    <radialGradient id="haloGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#2789f4" stop-opacity="0.19"/>
+      <stop offset="0.68" stop-color="#2789f4" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#2789f4" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#020817" flood-opacity="0.48"/>
+    </filter>
+    <filter id="nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Presentation board -->
+  <rect width="1200" height="760" rx="28" fill="#0a1326"/>
+  <rect x="28" y="28" width="1144" height="704" rx="22" fill="#0f1d35" stroke="#233654"/>
+  <path d="M50 150H1150M50 610H1150" stroke="#1a2c49"/>
+
+  <text x="76" y="92" fill="#7dd3fc" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="700" letter-spacing="2.6">HEARTBEAT BRAND EXPLORATIONS</text>
+  <text x="1124" y="92" text-anchor="end" fill="#6e82a2" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" letter-spacing="1.5">CONCEPT C · RUN ORBIT</text>
+
+  <!-- Main showcase panel -->
+  <rect x="76" y="190" width="1048" height="370" rx="22" fill="#0b172c" stroke="#203653"/>
+  <circle cx="336" cy="375" r="220" fill="url(#haloGradient)"/>
+
+  <!-- Orbit icon: intentionally broken into directional arcs to suggest run / stop / restart -->
+  <g transform="translate(336 375)" filter="url(#softShadow)">
+    <circle r="147" fill="none" stroke="#172a46" stroke-width="22"/>
+    <path d="M-108-98 A147 147 0 0 1 108-98" fill="none" stroke="url(#orbitGradient)" stroke-width="22" stroke-linecap="round"/>
+    <path d="M126-44 A147 147 0 0 1 66 126" fill="none" stroke="url(#orbitGradient)" stroke-width="22" stroke-linecap="round"/>
+    <path d="M-5 147 A147 147 0 0 1 -126 44" fill="none" stroke="url(#orbitGradient)" stroke-width="22" stroke-linecap="round"/>
+    <path d="M-143-24 A147 147 0 0 1 -126-47" fill="none" stroke="#7dd3fc" stroke-width="22" stroke-linecap="round"/>
+
+    <!-- service / process nodes -->
+    <circle cx="103" cy="-105" r="13" fill="#7dd3fc" filter="url(#nodeGlow)"/>
+    <circle cx="103" cy="-105" r="5" fill="#e5f8ff"/>
+    <circle cx="127" cy="74" r="13" fill="#2789f4" filter="url(#nodeGlow)"/>
+    <circle cx="127" cy="74" r="5" fill="#e5f8ff"/>
+    <circle cx="-105" cy="104" r="13" fill="#7dd3fc" filter="url(#nodeGlow)"/>
+    <circle cx="-105" cy="104" r="5" fill="#e5f8ff"/>
+
+    <!-- central control core, deliberately geometric rather than medical -->
+    <rect x="-57" y="-57" width="114" height="114" rx="28" fill="#081326" stroke="#2b4a72" stroke-width="2"/>
+    <rect x="-44" y="-44" width="88" height="88" rx="21" fill="url(#coreGradient)"/>
+    <circle cx="0" cy="0" r="12" fill="#e9f8ff"/>
+    <circle cx="0" cy="0" r="5" fill="#2789f4"/>
+    <path d="M-28 0h16M12 0h16M0-28v16M0 12v16" stroke="#dff7ff" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Wordmark lockup -->
+  <g transform="translate(610 287)">
+    <text x="0" y="70" fill="#f3f8ff" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="68" font-weight="760" letter-spacing="-2.4">Heartbeat</text>
+    <rect x="3" y="96" width="58" height="5" rx="2.5" fill="url(#orbitGradient)"/>
+    <text x="0" y="139" fill="#a9bad2" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="19" font-weight="500" letter-spacing="0.3">Local Dev Service Control</text>
+    <text x="0" y="174" fill="#6f85a5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="15" font-weight="500">本地开发服务控制台</text>
+    <g transform="translate(0 222)">
+      <rect width="154" height="31" rx="15.5" fill="#122946" stroke="#2c527e"/>
+      <circle cx="19" cy="15.5" r="4" fill="#7dd3fc"/>
+      <text x="34" y="21" fill="#c5e9fa" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="700" letter-spacing="1.2">RUN ORBIT</text>
+    </g>
+  </g>
+
+  <!-- Small usage strip -->
+  <text x="76" y="651" fill="#7389a9" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="700" letter-spacing="1.8">LOCKUP PREVIEW</text>
+  <g transform="translate(76 673)">
+    <rect width="46" height="46" rx="13" fill="#081326" stroke="#2a4d79"/>
+    <circle cx="23" cy="23" r="13" fill="none" stroke="url(#orbitGradient)" stroke-width="4" stroke-dasharray="27 10"/>
+    <circle cx="23" cy="23" r="4" fill="#e9f8ff"/>
+    <text x="67" y="30" fill="#f3f8ff" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="25" font-weight="750" letter-spacing="-0.8">Heartbeat</text>
+    <text x="230" y="29" fill="#6f85a5" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="500">service orchestration / continuous run</text>
+  </g>
+</svg>

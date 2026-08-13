@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Concept F — Control Grid</title>
+  <desc id="desc">A restrained control grid mark with one selected service cell and fine routing lines.</desc>
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fbff"/>
+      <stop offset="1" stop-color="#e9f2fb"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#071b33" flood-opacity=".13"/>
+    </filter>
+  </defs>
+
+  <!-- Presentation board -->
+  <rect width="1600" height="900" fill="#f2f6fa"/>
+  <rect x="68" y="58" width="1464" height="784" rx="24" fill="url(#panel)" filter="url(#shadow)"/>
+  <path d="M68 218H1532" stroke="#dbe7f2" stroke-width="1"/>
+  <text x="116" y="126" font-family="Arial, Helvetica, sans-serif" font-size="18" letter-spacing="4" fill="#56718c">CONCEPT F / CONTROL GRID</text>
+  <text x="116" y="174" font-family="Arial, Helvetica, sans-serif" font-size="14" letter-spacing="1.8" fill="#89a0b6">A SYSTEM MARK FOR LOCAL SERVICE CONTROL</text>
+
+  <!-- Main mark area -->
+  <rect x="116" y="268" width="600" height="420" rx="18" fill="#081e37"/>
+  <text x="156" y="322" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="3" fill="#7dd3fc">PRIMARY MARK</text>
+  <g transform="translate(190 370)">
+    <!-- fine routing lines behind the cells -->
+    <path d="M84 89H124M84 209H124M204 89H244M204 209H244M124 89V209M244 89V209" fill="none" stroke="#4e6c88" stroke-width="2"/>
+    <path d="M84 89H244M84 209H244" fill="none" stroke="#2d4d6c" stroke-width="1" stroke-dasharray="3 8"/>
+    <!-- 3 x 2 control cells -->
+    <g fill="#102f50" stroke="#41617f" stroke-width="2">
+      <rect x="0" y="40" width="84" height="98" rx="9"/>
+      <rect x="120" y="40" width="84" height="98" rx="9"/>
+      <rect x="240" y="40" width="84" height="98" rx="9"/>
+      <rect x="0" y="160" width="84" height="98" rx="9"/>
+      <rect x="120" y="160" width="84" height="98" rx="9"/>
+      <rect x="240" y="160" width="84" height="98" rx="9"/>
+    </g>
+    <!-- selected control cell -->
+    <rect x="120" y="40" width="84" height="98" rx="9" fill="#2789f4" stroke="#7dd3fc" stroke-width="3"/>
+    <path d="M143 86H181M143 96H172M143 106H181" stroke="#eaf8ff" stroke-width="5" stroke-linecap="round"/>
+    <path d="M40 81v16M33 89h14M280 81v16M273 89h14M40 201v16M33 209h14M160 201v16M153 209h14M280 201v16M273 209h14" stroke="#7da1c1" stroke-width="3" stroke-linecap="round"/>
+    <!-- connection terminals -->
+    <path d="M162 26v14M162 138v22M-14 89h14M324 89h14M-14 209h14M324 209h14" stroke="#7dd3fc" stroke-width="3" stroke-linecap="round"/>
+    <rect x="154" y="14" width="16" height="12" rx="3" fill="#7dd3fc"/>
+  </g>
+  <text x="156" y="656" font-family="Arial, Helvetica, sans-serif" font-size="13" letter-spacing="1.5" fill="#91aec8">ONE CONTROL SURFACE · MANY LOCAL SERVICES</text>
+
+  <!-- Wordmark and message -->
+  <g transform="translate(804 286)">
+    <text x="0" y="88" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="700" letter-spacing="-2" fill="#081e37">Heartbeat</text>
+    <rect y="113" width="76" height="5" rx="2.5" fill="#2789f4"/>
+    <text x="0" y="164" font-family="Arial, Helvetica, sans-serif" font-size="22" letter-spacing="1" fill="#41617f">LOCAL SERVICE CONTROL</text>
+    <text x="0" y="208" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#6f879d">统一控制本地服务 · 本地开发服务控制台</text>
+    <path d="M0 252H560" stroke="#c7d9e9"/>
+    <text x="0" y="294" font-family="Arial, Helvetica, sans-serif" font-size="13" letter-spacing="2.5" fill="#7c96ad">DESIGN LOGIC</text>
+    <text x="0" y="330" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#45627e">A selected unit makes the system legible at a glance.</text>
+    <text x="0" y="358" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#45627e">Fine routes imply coordination without visual noise.</text>
+  </g>
+
+  <!-- Size check -->
+  <g transform="translate(116 736)">
+    <text x="0" y="0" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="2.5" fill="#7c96ad">SIZE CHECK</text>
+    <g transform="translate(0 22)">
+      <rect width="66" height="48" rx="8" fill="#081e37"/>
+      <rect x="18" y="10" width="30" height="24" rx="3" fill="#102f50" stroke="#7dd3fc" stroke-width="1.5"/>
+      <rect x="30" y="10" width="18" height="24" rx="3" fill="#2789f4"/>
+      <text x="82" y="31" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#45627e">16 px favicon remains a single clear selected cell</text>
+    </g>
+  </g>
+
+  <!-- Mono and reverse specimens -->
+  <g transform="translate(804 700)">
+    <text x="0" y="0" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="2.5" fill="#7c96ad">MONO / REVERSE</text>
+    <rect x="0" y="22" width="178" height="82" rx="10" fill="#ffffff" stroke="#d4e2ed"/>
+    <g transform="translate(27 40)" fill="none" stroke="#081e37" stroke-width="5">
+      <rect x="0" y="0" width="34" height="26" rx="4"/><rect x="50" y="0" width="34" height="26" rx="4" fill="#081e37"/><rect x="100" y="0" width="34" height="26" rx="4"/>
+      <rect x="0" y="38" width="34" height="26" rx="4"/><rect x="50" y="38" width="34" height="26" rx="4"/><rect x="100" y="38" width="34" height="26" rx="4"/>
+      <path d="M34 13h16M84 13h16M34 51h16M84 51h16" stroke-width="2"/>
+    </g>
+    <rect x="202" y="22" width="178" height="82" rx="10" fill="#081e37"/>
+    <g transform="translate(229 40)" fill="none" stroke="#ffffff" stroke-width="5">
+      <rect x="0" y="0" width="34" height="26" rx="4"/><rect x="50" y="0" width="34" height="26" rx="4" fill="#ffffff"/><rect x="100" y="0" width="34" height="26" rx="4"/>
+      <rect x="0" y="38" width="34" height="26" rx="4"/><rect x="50" y="38" width="34" height="26" rx="4"/><rect x="100" y="38" width="34" height="26" rx="4"/>
+      <path d="M34 13h16M84 13h16M34 51h16M84 51h16" stroke="#7dd3fc" stroke-width="2"/>
+    </g>
+  </g>
+
+  <text x="1430" y="786" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="12" letter-spacing="2" fill="#9ab0c3">HEARTBEAT / 2026</text>
+</svg>

@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="title desc">
+  <title id="title">Heartbeat Concept A — Pulse Node</title>
+  <desc id="desc">A concept presentation board for the Heartbeat Pulse Node logo. Connected service rails meet a measured signal path and three active nodes.</desc>
+
+  <defs>
+    <linearGradient id="board" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071625"/>
+      <stop offset="1" stop-color="#0b2338"/>
+    </linearGradient>
+    <linearGradient id="pulse" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7dd3fc"/>
+      <stop offset="0.5" stop-color="#2789f4"/>
+      <stop offset="1" stop-color="#7dd3fc"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#2789f4" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#2789f4" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#9bdcff" stroke-opacity="0.035"/>
+    </pattern>
+
+    <!-- Source mark: a pair of connected service rails with one pulse path. -->
+    <g id="pulse-mark">
+      <path d="M0 0V220 M220 0V220" fill="none" stroke="currentColor" stroke-opacity="0.34" stroke-width="12" stroke-linecap="round"/>
+      <path d="M0 0V220 M220 0V220" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+      <path d="M0 110H54L80 66L108 154L137 110H220" fill="none" stroke="#06182e" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M0 110H54L80 66L108 154L137 110H220" fill="none" stroke="url(#pulse)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+      <g fill="#06182e" stroke="currentColor" stroke-width="6">
+        <circle cx="0" cy="0" r="14"/><circle cx="0" cy="220" r="14"/>
+        <circle cx="220" cy="0" r="14"/><circle cx="220" cy="220" r="14"/>
+      </g>
+      <circle cx="80" cy="66" r="8" fill="#7dd3fc"/>
+      <circle cx="108" cy="154" r="8" fill="#2789f4"/>
+      <circle cx="137" cy="110" r="8" fill="#7dd3fc"/>
+    </g>
+    <g id="pulse-mark-flat">
+      <path d="M0 0V220 M220 0V220 M0 110H54L80 66L108 154L137 110H220" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+      <g fill="currentColor"><circle cx="0" cy="0" r="14"/><circle cx="0" cy="220" r="14"/><circle cx="220" cy="0" r="14"/><circle cx="220" cy="220" r="14"/></g>
+      <circle cx="80" cy="66" r="8" fill="currentColor"/><circle cx="108" cy="154" r="8" fill="currentColor"/><circle cx="137" cy="110" r="8" fill="currentColor"/>
+    </g>
+  </defs>
+
+  <rect width="1600" height="900" fill="#050e19"/>
+  <rect x="24" y="24" width="1552" height="852" rx="28" fill="url(#board)" stroke="#2d5c83" stroke-opacity="0.64" stroke-width="2"/>
+  <rect x="24" y="24" width="1552" height="852" rx="28" fill="url(#grid)"/>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <text x="84" y="94" fill="#63e6c0" font-size="18" font-weight="700" letter-spacing="4.6">CONCEPT A / PULSE NODE</text>
+    <text x="84" y="128" fill="#6f8da8" font-size="16" letter-spacing="2.1">CONNECTED RAILS · SIGNAL PATH · ACTIVE SERVICES</text>
+
+    <circle cx="362" cy="442" r="292" fill="url(#halo)"/>
+    <circle cx="362" cy="442" r="224" fill="#06182e" stroke="#3f7aa5" stroke-opacity="0.62" stroke-width="2"/>
+    <g transform="translate(250 328) scale(1.02)" color="#63e6c0">
+      <use href="#pulse-mark"/>
+    </g>
+    <text x="362" y="738" text-anchor="middle" fill="#557994" font-size="14" letter-spacing="3.1">SIGNAL-LED MARK · SERVICE NODES</text>
+
+    <g transform="translate(794 176)">
+      <g transform="translate(0 2) scale(.24)" color="#63e6c0"><use href="#pulse-mark"/></g>
+      <text x="92" y="57" fill="#eef8ff" font-size="48" font-weight="700" letter-spacing="-1.2">Heart<tspan fill="#63e6c0">beat</tspan></text>
+      <path d="M0 106H690" stroke="#5ca8d3" stroke-opacity="0.42" stroke-width="2"/>
+      <text x="0" y="140" fill="#6f8da8" font-size="15" letter-spacing="2.7">CONNECT THE SIGNAL. SEE WHAT'S RUNNING.</text>
+    </g>
+
+    <path d="M794 438H1466" stroke="#2e5876" stroke-opacity="0.68" stroke-width="2"/>
+    <text x="794" y="485" fill="#6f8da8" font-size="16" letter-spacing="3.1">SIZE CHECKS</text>
+
+    <g transform="translate(794 522)" text-anchor="middle">
+      <g transform="translate(0 0) scale(.073)" color="#63e6c0"><use href="#pulse-mark"/></g>
+      <g transform="translate(124 0) scale(.109)" color="#63e6c0"><use href="#pulse-mark"/></g>
+      <g transform="translate(276 0) scale(.145)" color="#63e6c0"><use href="#pulse-mark"/></g>
+      <text x="8" y="106" fill="#90aac0" font-size="14">16 px</text>
+      <text x="148" y="106" fill="#90aac0" font-size="14">24 px</text>
+      <text x="308" y="106" fill="#90aac0" font-size="14">32 px</text>
+    </g>
+
+    <g transform="translate(1238 516)">
+      <text x="0" y="0" fill="#6f8da8" font-size="16" letter-spacing="3.1">MONO / REVERSE</text>
+      <rect x="0" y="28" width="112" height="112" rx="18" fill="#f0f8ff"/>
+      <g transform="translate(27 45) scale(.265)" color="#06182e"><use href="#pulse-mark-flat"/></g>
+      <rect x="136" y="28" width="112" height="112" rx="18" fill="#172d43"/>
+      <g transform="translate(163 45) scale(.265)" color="#f0f8ff"><use href="#pulse-mark-flat"/></g>
+    </g>
+
+    <text x="84" y="830" fill="#315570" font-size="14" letter-spacing="2.9">VECTOR EXPLORATION · CLARITY / CONNECTION / MOTION</text>
+    <text x="1514" y="830" text-anchor="end" fill="#315570" font-size="14" letter-spacing="2.9">HEARTBEAT / 2026</text>
+  </g>
+</svg>

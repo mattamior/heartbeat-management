@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 112" role="img" aria-labelledby="title desc">
+  <title id="title">Heartbeat, reversed</title>
+  <desc id="desc">Heartbeat local development service control logo for dark backgrounds.</desc>
+  <defs>
+    <linearGradient id="pulse" x1="16" y1="48" x2="80" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7dd3fc"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(8 8)">
+    <path d="M18 18v60M78 18v60" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+    <path d="M18 48h14l8-18 8 36 8-18h22" fill="none" stroke="url(#pulse)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="18" cy="48" r="5" fill="#7dd3fc"/>
+    <circle cx="78" cy="48" r="5" fill="#7dd3fc"/>
+  </g>
+  <text x="112" y="53" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="700" letter-spacing="-0.8">Heartbeat</text>
+  <text x="114" y="79" fill="#cbd5e1" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="500" letter-spacing="0.25">本地开发服务控制台 · Local Dev Service Control</text>
+</svg>

@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Heartbeat Concept C — Run Orbit</title>
+  <desc id="desc">A dark navy brand presentation board for the Heartbeat Run Orbit concept, with a large orbit control mark, wordmark, size checks, and mono reverse samples.</desc>
+
+  <defs>
+    <linearGradient id="orbitGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#69e4c0"/>
+      <stop offset="0.48" stop-color="#4ea3f3"/>
+      <stop offset="1" stop-color="#2b71d5"/>
+    </linearGradient>
+    <linearGradient id="coreGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#63dcb9"/>
+      <stop offset="1" stop-color="#3e94ed"/>
+    </linearGradient>
+    <radialGradient id="haloGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#2789f4" stop-opacity="0.16"/>
+      <stop offset="0.68" stop-color="#2789f4" stop-opacity="0.045"/>
+      <stop offset="1" stop-color="#2789f4" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#020817" flood-opacity="0.54"/>
+    </filter>
+    <filter id="nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <g id="runOrbitColor">
+      <circle r="147" fill="none" stroke="#172a46" stroke-width="22"/>
+      <path d="M-108-98 A147 147 0 0 1 108-98" fill="none" stroke="url(#orbitGradient)" stroke-width="22" stroke-linecap="round"/>
+      <path d="M126-44 A147 147 0 0 1 66 126" fill="none" stroke="url(#orbitGradient)" stroke-width="22" stroke-linecap="round"/>
+      <path d="M-5 147 A147 147 0 0 1 -126 44" fill="none" stroke="url(#orbitGradient)" stroke-width="22" stroke-linecap="round"/>
+      <path d="M-143-24 A147 147 0 0 1 -126-47" fill="none" stroke="#69e4c0" stroke-width="22" stroke-linecap="round"/>
+      <circle cx="103" cy="-105" r="13" fill="#69e4c0" filter="url(#nodeGlow)"/><circle cx="103" cy="-105" r="5" fill="#eafffb"/>
+      <circle cx="127" cy="74" r="13" fill="#4ea3f3" filter="url(#nodeGlow)"/><circle cx="127" cy="74" r="5" fill="#eafffb"/>
+      <circle cx="-105" cy="104" r="13" fill="#69e4c0" filter="url(#nodeGlow)"/><circle cx="-105" cy="104" r="5" fill="#eafffb"/>
+      <rect x="-57" y="-57" width="114" height="114" rx="28" fill="#081326" stroke="#2b4a72" stroke-width="2"/>
+      <rect x="-44" y="-44" width="88" height="88" rx="21" fill="url(#coreGradient)"/>
+      <circle cx="0" cy="0" r="12" fill="#e9f8ff"/><circle cx="0" cy="0" r="5" fill="#2789f4"/>
+      <path d="M-28 0h16M12 0h16M0-28v16M0 12v16" stroke="#e9f8ff" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g id="runOrbitMono">
+      <circle r="147" fill="none" stroke="#dce7f2" stroke-width="22"/>
+      <path d="M-108-98 A147 147 0 0 1 108-98M126-44 A147 147 0 0 1 66 126M-5 147 A147 147 0 0 1 -126 44M-143-24 A147 147 0 0 1 -126-47" fill="none" stroke="#0b1728" stroke-width="22" stroke-linecap="round"/>
+      <circle cx="103" cy="-105" r="13" fill="#0b1728"/><circle cx="127" cy="74" r="13" fill="#0b1728"/><circle cx="-105" cy="104" r="13" fill="#0b1728"/>
+      <circle cx="103" cy="-105" r="5" fill="#f8fbff"/><circle cx="127" cy="74" r="5" fill="#f8fbff"/><circle cx="-105" cy="104" r="5" fill="#f8fbff"/>
+      <rect x="-57" y="-57" width="114" height="114" rx="28" fill="#f8fbff" stroke="#0b1728" stroke-width="2"/>
+      <rect x="-44" y="-44" width="88" height="88" rx="21" fill="#0b1728"/>
+      <circle cx="0" cy="0" r="12" fill="#f8fbff"/><circle cx="0" cy="0" r="5" fill="#0b1728"/>
+      <path d="M-28 0h16M12 0h16M0-28v16M0 12v16" stroke="#f8fbff" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g id="runOrbitReverse">
+      <circle r="147" fill="none" stroke="#23364e" stroke-width="22"/>
+      <path d="M-108-98 A147 147 0 0 1 108-98M126-44 A147 147 0 0 1 66 126M-5 147 A147 147 0 0 1 -126 44M-143-24 A147 147 0 0 1 -126-47" fill="none" stroke="#f4f9ff" stroke-width="22" stroke-linecap="round"/>
+      <circle cx="103" cy="-105" r="13" fill="#f4f9ff"/><circle cx="127" cy="74" r="13" fill="#f4f9ff"/><circle cx="-105" cy="104" r="13" fill="#f4f9ff"/>
+      <circle cx="103" cy="-105" r="5" fill="#172942"/><circle cx="127" cy="74" r="5" fill="#172942"/><circle cx="-105" cy="104" r="5" fill="#172942"/>
+      <rect x="-57" y="-57" width="114" height="114" rx="28" fill="#f4f9ff" stroke="#f4f9ff" stroke-width="2"/>
+      <rect x="-44" y="-44" width="88" height="88" rx="21" fill="#172942"/>
+      <circle cx="0" cy="0" r="12" fill="#f4f9ff"/><circle cx="0" cy="0" r="5" fill="#172942"/>
+      <path d="M-28 0h16M12 0h16M0-28v16M0 12v16" stroke="#f4f9ff" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </defs>
+
+  <!-- Board and outer keyline -->
+  <rect width="1600" height="900" fill="#071321"/>
+  <rect x="64" y="64" width="1472" height="772" rx="30" fill="#091625" stroke="#1c3855" stroke-width="2"/>
+
+  <!-- Concept label -->
+  <text x="112" y="126" fill="#69e4c0" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="800" letter-spacing="4.4">CONCEPT C / RUN ORBIT</text>
+  <text x="112" y="158" fill="#6f849f" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="16" font-weight="600" letter-spacing="1.6">ORBITAL CONTROL · CONTINUOUS RUN · FOCUSED SIGNAL</text>
+
+  <!-- Large mark, left 40% -->
+  <circle cx="402" cy="472" r="270" fill="url(#haloGradient)"/>
+  <g transform="translate(402 472) scale(1.38)" filter="url(#softShadow)"><use href="#runOrbitColor"/></g>
+
+  <!-- Right lockup -->
+  <g transform="translate(768 238)">
+    <g transform="translate(0 4) scale(.34)"><use href="#runOrbitColor"/></g>
+    <text x="128" y="65" fill="#f3f8ff" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="56" font-weight="760" letter-spacing="-1.8">Heartbeat</text>
+    <rect x="130" y="93" width="74" height="4" rx="2" fill="url(#orbitGradient)"/>
+    <line x1="128" y1="129" x2="730" y2="129" stroke="#254967" stroke-width="2"/>
+    <text x="128" y="166" fill="#8197b1" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="16" font-weight="700" letter-spacing="3.2">LOCAL DEV SERVICE CONTROL</text>
+    <text x="128" y="196" fill="#5f7693" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="15" font-weight="500" letter-spacing=".4">Run every service with a clear signal.</text>
+  </g>
+
+  <line x1="768" y1="474" x2="1450" y2="474" stroke="#1d3a57" stroke-width="2"/>
+  <text x="768" y="520" fill="#7087a3" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="700" letter-spacing="3.2">SIZE CHECKS</text>
+
+  <!-- Size checks -->
+  <g transform="translate(768 565)">
+    <g transform="translate(0 0) scale(.055)"><use href="#runOrbitColor"/></g>
+    <g transform="translate(116 0) scale(.073)"><use href="#runOrbitColor"/></g>
+    <g transform="translate(244 0) scale(.097)"><use href="#runOrbitColor"/></g>
+    <text x="-15" y="91" fill="#8197b1" font-family="system-ui, sans-serif" font-size="14">16 px</text>
+    <text x="101" y="91" fill="#8197b1" font-family="system-ui, sans-serif" font-size="14">24 px</text>
+    <text x="231" y="91" fill="#8197b1" font-family="system-ui, sans-serif" font-size="14">32 px</text>
+  </g>
+
+  <!-- Mono / reverse -->
+  <text x="1172" y="520" fill="#7087a3" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="700" letter-spacing="3.2">MONO / REVERSE</text>
+  <g transform="translate(1172 552)">
+    <rect width="126" height="126" rx="18" fill="#f4f9ff"/>
+    <g transform="translate(63 63) scale(.30)"><use href="#runOrbitMono"/></g>
+    <rect x="146" width="126" height="126" rx="18" fill="#172942"/>
+    <g transform="translate(209 63) scale(.30)"><use href="#runOrbitReverse"/></g>
+  </g>
+
+  <text x="112" y="788" fill="#3f607d" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="700" letter-spacing="2.7">VECTOR EXPLORATION · CLARITY / FOCUS / DIRECTION</text>
+</svg>

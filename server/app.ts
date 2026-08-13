@@ -1,5 +1,5 @@
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, statSync } from 'node:fs';
+import { isAbsolute, join, relative, resolve, sep } from 'node:path';
 import Fastify, { type FastifyInstance } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import { ZodError } from 'zod';
@@ -101,7 +101,34 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
 
   if (existsSync(staticDir)) {
     await app.register(fastifyStatic, { root: staticDir, wildcard: false });
-    app.get('/*', async (_request, reply) => reply.sendFile('index.html'));
+    const staticRoot = resolve(staticDir);
+    app.get('/*', async (request, reply) => {
+      // Keep the SPA fallback, but serve a real public/build file first. This
+      // also covers files added after static route enumeration in production.
+      let pathname: string;
+      try {
+        pathname = decodeURIComponent((request.raw.url ?? '/').split('?', 1)[0]);
+      } catch {
+        pathname = '/';
+      }
+
+      if (pathname.startsWith('/') && !pathname.includes('\0') && !pathname.includes('\\')) {
+        const candidate = resolve(staticRoot, `.${pathname}`);
+        const relativePath = relative(staticRoot, candidate);
+        const escapesRoot = relativePath === '..'
+          || relativePath.startsWith(`..${sep}`)
+          || isAbsolute(relativePath);
+        if (!escapesRoot) {
+          try {
+            if (statSync(candidate).isFile()) return reply.sendFile(relativePath, staticRoot);
+          } catch {
+            // A missing or unreadable path is a client-side route.
+          }
+        }
+      }
+
+      return reply.sendFile('index.html', staticRoot);
+    });
   }
   return app;
 }

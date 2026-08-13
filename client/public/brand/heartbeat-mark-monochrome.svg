@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Heartbeat mark, monochrome</title>
+  <desc id="desc">A single-color pulse trace crossing an H-shaped pair of service nodes.</desc>
+  <path d="M18 18v60M78 18v60" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+  <path d="M18 48h14l8-18 8 36 8-18h22" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="18" cy="48" r="5" fill="currentColor"/>
+  <circle cx="78" cy="48" r="5" fill="currentColor"/>
+</svg>
