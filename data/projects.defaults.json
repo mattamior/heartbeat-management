@@ -1,0 +1,12 @@
+[
+  {"id":"bbg-admin","name":"BBG Admin","kind":"web","cwd":"/home/bbg/bbg-projects/bbg-admin","command":"npm exec --yes pnpm@10.22.0 -- dev","packageManager":"npm","port":26731,"url":"http://127.0.0.1:26731"},
+  {"id":"bbgcn-web","name":"BBGCN Web","kind":"web","cwd":"/home/bbg/bbg-projects/bbgcn-web","command":"npm start -- --port 8002","packageManager":"npm","port":8002,"url":"http://127.0.0.1:8002","env":{"NODE_OPTIONS":"--openssl-legacy-provider"}},
+  {"id":"data-admin-frontend","name":"Data Admin Frontend","kind":"web","cwd":"/home/bbg/bbg-projects/data-admin-frontend","command":"npm start","packageManager":"npm","port":8000,"url":"http://local-data.bbgdata.com:8000","env":{"NODE_OPTIONS":"--openssl-legacy-provider"}},
+  {"id":"en-faq","name":"EN FAQ","kind":"web","cwd":"/home/bbg/bbg-projects/en-faq","command":"env \"PATH=/home/bbg/.nvm/versions/node/v14.21.3/bin:$PATH\" /home/bbg/.nvm/versions/node/v14.21.3/bin/npm start -- --port 9000","packageManager":"npm","port":9000,"url":"http://127.0.0.1:9000","env":{"PORT":"9000"}},
+  {"id":"web-gm-rl-2023","name":"Web GM RL 2023","kind":"web","cwd":"/home/bbg/bbg-projects/web-gm-rl-2023","command":"yarn dev","packageManager":"yarn","port":7011,"url":"http://127.0.0.1:7011"},
+  {"id":"web-gm-sg-2025","name":"Web GM SG 2025","kind":"web","cwd":"/home/bbg/bbg-projects/web-gm-sg-2025","command":"yarn dev","packageManager":"yarn","port":2025,"url":"http://local-data.bbgdata.com:2025"},
+  {"id":"web-gm-tg-2026","name":"Web GM TG 2026","kind":"web","cwd":"/home/bbg/bbg-projects/web-gm-tg-2026","command":"npm exec --yes pnpm@10.33.0 -- dev","packageManager":"pnpm","port":2026,"url":"http://local-data.bbgdata.com:2026"},
+  {"id":"web-gm-xc-2022","name":"Web GM XC 2022","kind":"web","cwd":"/home/bbg/bbg-projects/web-gm-xc-2022","command":"yarn dev","packageManager":"yarn","port":2022,"url":"http://local-data.bbgdata.com:2022"},
+  {"id":"new-api","name":"New-API","kind":"unsupported","cwd":"/home/bbg/bbg-projects/New-API","unsupportedReason":"Docker 服务暂不支持"},
+  {"id":"bbgame-game-launcher","name":"BBGame Game Launcher","kind":"unsupported","cwd":"/home/bbg/bbg-projects/bbgame_game_launcher","unsupportedReason":"桌面应用暂不支持"}
+]
