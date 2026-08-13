@@ -1,4 +1,4 @@
-:root { --brand-primary: #2789f4; --brand-accent: #7dd3fc; --brand-surface: #10233e; --brand-text: #eaf4ff; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #e7edf7; background: #0b1120; font-synthesis: none; }
+:root { --brand-primary: #2789f4; --brand-accent: #7dd3fc; --brand-surface: #10233e; --brand-text: #eaf4ff; --brand-clearspace: 24px; --brand-mark-size: 72px; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #e7edf7; background: #0b1120; font-synthesis: none; }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; background: radial-gradient(circle at 20% 0%, #172848, transparent 37rem), #0b1120; }
 button, input, textarea { font: inherit; }
@@ -6,9 +6,9 @@ button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: .45; }
 .app-shell { max-width: 1360px; margin: 0 auto; padding: 42px 28px 64px; }
 .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 28px; }
-.brand-lockup { min-width: 0; }
-.brand-heading { display: flex; align-items: center; gap: 12px; }
-.brand-mark { display: block; flex: none; width: 42px; height: 42px; }
+.brand-lockup { min-width: 0; flex: 1 1 auto; padding: var(--brand-clearspace) 0; }
+.brand-heading { display: flex; align-items: center; gap: var(--brand-clearspace); min-width: 0; }
+.brand-mark { display: block; flex: none; width: var(--brand-mark-size); height: var(--brand-mark-size); }
 .eyebrow { margin: 0 0 7px; color: var(--brand-accent); font-size: .72rem; font-weight: 700; letter-spacing: .13em; }
 h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.5rem); letter-spacing: -.04em; }
 .subtitle { margin: 8px 0 0; color: #9dacbf; }
@@ -22,4 +22,4 @@ h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.5rem); letter-spacing: -.04em; }
 .project-details { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0; }.project-details div { min-width: 0; }.project-details .detail-wide { grid-column: 1 / -1; }.project-details dt { margin-bottom: 4px; color: #7f90a8; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; }.project-details dd { margin: 0; overflow-wrap: anywhere; color: #d5dfed; font-size: .84rem; }.card-actions, .card-footer, .editor-actions, .dialog-actions { display: flex; flex-wrap: wrap; gap: 8px; }.card-footer { justify-content: space-between; margin-top: 14px; }.text-button { border: 0; padding: 0; color: #77b9f7; background: transparent; font-size: .8rem; }.log-panel { max-height: 240px; margin: 14px 0 0; overflow: auto; border: 1px solid #273856; border-radius: 7px; padding: 10px; color: #b8d8c7; background: #09111e; font: .73rem/1.55 "SFMono-Regular", Consolas, monospace; white-space: pre-wrap; }
 .config-editor { display: grid; gap: 11px; margin-top: 15px; border-top: 1px solid #273754; padding-top: 15px; }.config-editor label { display: grid; gap: 5px; color: #aab8ca; font-size: .77rem; }.config-editor input, .config-editor textarea { width: 100%; border: 1px solid #384b69; border-radius: 6px; padding: 8px; color: #eaf2fc; background: #0c1525; outline: none; }.config-editor input:focus, .config-editor textarea:focus { border-color: #4b9bea; }.form-row { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }.editor-actions { justify-content: flex-end; margin-top: 2px; }
 .dialog-backdrop { position: fixed; z-index: 5; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(2, 6, 14, .7); }.dialog { width: min(440px, 100%); border: 1px solid #3b4f70; border-radius: 12px; padding: 21px; background: #132034; box-shadow: 0 24px 80px rgba(0,0,0,.5); }.dialog h3 { margin: 0 0 10px; }.dialog p { color: #bdcada; font-size: .9rem; line-height: 1.55; }.dialog-note { color: #f8d690 !important; }.dialog-actions { justify-content: flex-end; margin-top: 20px; }.empty { border: 1px dashed #364967; border-radius: 12px; padding: 60px 20px; color: #98a9c0; text-align: center; }
-@media (max-width: 620px) { .app-shell { padding: 26px 16px 44px; }.topbar { flex-direction: column; }.header-actions { justify-content: flex-start; }.project-grid { grid-template-columns: 1fr; }.form-row { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .app-shell { padding: 26px 16px 44px; }.topbar { flex-direction: column; }.brand-lockup { width: 100%; padding: 0; }.brand-heading { gap: 16px; }.brand-mark { width: 60px; height: 60px; }.subtitle { max-width: 100%; overflow-wrap: anywhere; }.header-actions { justify-content: flex-start; }.project-grid { grid-template-columns: 1fr; }.form-row { grid-template-columns: 1fr; } }

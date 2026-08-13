@@ -1,12 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 112" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 176" role="img" aria-labelledby="title desc">
   <title id="title">Heartbeat, monochrome</title>
-  <desc id="desc">Single-color Heartbeat local development service control logo.</desc>
-  <g transform="translate(8 8)" color="#0b1220">
-    <path d="M18 18v60M78 18v60" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
-    <path d="M18 48h14l8-18 8 36 8-18h22" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="18" cy="48" r="5" fill="currentColor"/>
-    <circle cx="78" cy="48" r="5" fill="currentColor"/>
+  <desc id="desc">Single-color Heartbeat local development service control logo with a square-bracket mark and sharp QRS pulse.</desc>
+  <g transform="translate(8 8) scale(.5)">
+    <path d="M106 42H48V278H106M214 42H272V278H214" fill="none" stroke="#10233e" stroke-width="18" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M106 160H132L145 145L157 158L174 84L192 236L208 160H214" fill="none" stroke="#10233e" stroke-width="16" stroke-linecap="square" stroke-linejoin="miter" stroke-miterlimit="4"/>
+    <circle cx="106" cy="160" r="10" fill="#10233e"/>
+    <circle cx="214" cy="160" r="10" fill="#10233e"/>
   </g>
-  <text x="112" y="53" fill="#0b1220" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="700" letter-spacing="-0.8">Heartbeat</text>
-  <text x="114" y="79" fill="#0b1220" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="500" letter-spacing="0.25">本地开发服务控制台 · Local Dev Service Control</text>
+  <text x="178" y="83" fill="#10233e" font-family="Inter, Segoe UI, Arial, Helvetica, sans-serif" font-size="58" font-weight="700" letter-spacing="-1.5">Heartbeat</text>
+  <text x="181" y="119" fill="#10233e" font-family="Inter, Segoe UI, Arial, Helvetica, sans-serif" font-size="16" font-weight="600" letter-spacing="2.3">LOCAL DEV SERVICE CONTROL</text>
 </svg>

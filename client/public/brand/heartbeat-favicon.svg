@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Heartbeat favicon</title>
+  <desc id="desc">Simplified square-bracket and sharp pulse mark for browser tabs.</desc>
+  <path d="M22 9H10V55H22M42 9H54V55H42" fill="none" stroke="#2789f4" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M22 32H27L30 28L33 31L37 17L41 47L45 32" fill="none" stroke="#7dd3fc" stroke-width="4.5" stroke-linecap="square" stroke-linejoin="miter"/>
+  <circle cx="22" cy="32" r="3" fill="#7dd3fc"/>
+  <circle cx="42" cy="32" r="3" fill="#7dd3fc"/>
+</svg>

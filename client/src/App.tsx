@@ -106,13 +106,13 @@ export function App() {
       <header className="topbar">
         <div className="brand-lockup">
           <div className="brand-heading">
-            <img className="brand-mark" src="/brand/heartbeat-mark.svg" alt="Heartbeat 标志" width="42" height="42" />
+            <img className="brand-mark" src="/brand/heartbeat-mark-reversed.svg" alt="Heartbeat 标志" width="72" height="72" />
             <div>
               <p className="eyebrow">127.0.0.1 · LOCAL ONLY</p>
               <h1>Heartbeat</h1>
+              <p className="subtitle">本地开发服务控制台 · Local Dev Service Control</p>
             </div>
           </div>
-          <p className="subtitle">本地开发服务控制台 · Local Dev Service Control</p>
         </div>
         <div className="header-actions">
           <span className={`connection ${connection}`}><i />{connection === 'connected' ? '实时同步中' : connection === 'connecting' ? '正在连接' : '实时连接断开'}</span>
