@@ -3,9 +3,9 @@ import { isAbsolute, join, relative, resolve, sep } from 'node:path';
 import Fastify, { type FastifyInstance } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import { ZodError } from 'zod';
-import type { ProjectConfig, ProjectView } from '../shared/types.js';
+import type { ProjectConfig } from '../shared/types.js';
 import { ProjectStore } from './config.js';
-import { ProjectProcessManager } from './process-manager.js';
+import { ProcessOperationError, ProjectProcessManager, type ExtendedProjectStatus, type TakeoverSnapshot } from './process-manager.js';
 
 export interface AppOptions {
   configFile?: string;
@@ -40,10 +40,41 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
   app.setErrorHandler((error, _request, reply) => {
     const validation = error instanceof ZodError;
     const message = error instanceof Error ? error.message : '请求失败';
+    if (error instanceof ProcessOperationError) {
+      const statusCode = error.code.startsWith('TAKEOVER_') && !error.code.endsWith('START_FAILED') ? 409 : 400;
+      const terminatedPids = error.terminated.map(({ pid }) => pid);
+      const failure = {
+        code: error.code,
+        phase: error.phase,
+        operation: 'takeover',
+        terminated: error.terminated,
+        terminatedPids,
+        diagnostic: error.diagnostic,
+        diagnostics: error.diagnostic,
+        restored: error.restored,
+        restoreFailed: error.restoreFailed,
+        restoreResults: error.restoreResults
+      };
+      return reply.code(statusCode).send({
+        message,
+        code: error.code,
+        phase: error.phase,
+        terminated: error.terminated,
+        terminatedPids,
+        diagnostic: error.diagnostic,
+        diagnostics: error.diagnostic,
+        restored: error.restored,
+        restoreFailed: error.restoreFailed,
+        restoreResults: error.restoreResults,
+        failure,
+        details: failure,
+        refreshRequired: error.code === 'TAKEOVER_STALE'
+      });
+    }
     reply.code(validation ? 400 : 400).send({ message });
   });
 
-  const views = async (): Promise<ProjectView[]> => Promise.all((await store.read()).map(async (project) => ({ ...project, status: await manager.status(project) })));
+  const views = async (): Promise<Array<ProjectConfig & { status: ExtendedProjectStatus }>> => Promise.all((await store.read()).map(async (project) => ({ ...project, status: await manager.status(project) })));
   const projectById = async (id: string): Promise<ProjectConfig> => {
     const project = (await store.read()).find((candidate) => candidate.id === id);
     if (!project) throw new Error('项目不存在');
@@ -77,11 +108,17 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
     const project = await projectById(request.params.id);
     return { status: await manager.restart(project) };
   });
-  app.post<{ Params: { id: string }; Body: { confirm?: boolean; confirmPort?: number; confirmPid?: number } }>('/api/projects/:id/takeover', async (request) => {
+  app.post<{ Params: { id: string }; Body: { confirm?: boolean; force?: boolean; confirmPort?: number; acknowledgement?: string; snapshot?: unknown } }>('/api/projects/:id/takeover', async (request) => {
     const project = await projectById(request.params.id);
-    const { confirmPort, confirmPid } = request.body ?? {};
-    if (request.body?.confirm !== true || !Number.isInteger(confirmPort) || !Number.isInteger(confirmPid)) throw new Error('接管必须确认 confirm: true、confirmPort 和 confirmPid');
-    return { status: await manager.takeover(project, confirmPort as number, confirmPid as number) };
+    if (request.body?.confirm !== true) throw new Error('接管必须确认 confirm: true 和完整 snapshot');
+    const snapshot = parseTakeoverSnapshot(request.body.snapshot);
+    if (request.body.force === true) {
+      if (request.body.confirmPort !== project.port || request.body.acknowledgement !== String(project.port)) {
+        throw new Error('强制释放端口必须确认当前项目端口');
+      }
+      return { status: await manager.forceTakeover(project, snapshot) };
+    }
+    return { status: await manager.takeover(project, snapshot) };
   });
   app.get('/api/events', async (request, reply) => {
     reply.raw.writeHead(200, {
@@ -131,4 +168,37 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
     });
   }
   return app;
+}
+
+function parseTakeoverSnapshot(value: unknown): TakeoverSnapshot {
+  if (!value || typeof value !== 'object') throw new Error('接管必须提供完整 snapshot');
+  const record = value as Record<string, unknown>;
+  if (!Number.isInteger(record.port) || !Array.isArray(record.listeners)) throw new Error('接管 snapshot 必须包含 port 和 listeners');
+  const listeners = record.listeners.map((value) => {
+    if (!value || typeof value !== 'object') throw new Error('接管 snapshot 包含无效监听进程');
+    const listener = value as Record<string, unknown>;
+    if (!Number.isInteger(listener.pid) || typeof listener.visibility !== 'string') throw new Error('接管 snapshot 包含无效监听进程');
+    if (listener.startedAt !== undefined && typeof listener.startedAt !== 'string') throw new Error('接管 snapshot 包含无效启动时间');
+    if (listener.cwd !== undefined && typeof listener.cwd !== 'string') throw new Error('接管 snapshot 包含无效工作目录');
+    if (listener.command !== undefined && typeof listener.command !== 'string') throw new Error('接管 snapshot 包含无效命令摘要');
+    if (listener.commandSummary !== undefined && typeof listener.commandSummary !== 'string') throw new Error('接管 snapshot 包含无效命令摘要');
+    if (listener.pgid !== undefined && !Number.isInteger(listener.pgid)) throw new Error('接管 snapshot 包含无效进程组');
+    if (listener.groupPids !== undefined && (!Array.isArray(listener.groupPids) || listener.groupPids.some((pid) => !Number.isInteger(pid)))) throw new Error('接管 snapshot 包含无效进程组成员');
+    if (listener.groupComplete !== undefined && typeof listener.groupComplete !== 'boolean') throw new Error('接管 snapshot 包含无效进程组状态');
+    if (listener.visibility !== 'visible' && listener.visibility !== 'unavailable') throw new Error('接管 snapshot 包含无效可见性');
+    if (listener.side !== undefined && listener.side !== 'wsl' && listener.side !== 'windows') throw new Error('接管 snapshot 包含无效占用侧');
+    if (listener.source !== undefined && typeof listener.source !== 'string') throw new Error('接管 snapshot 包含无效占用来源');
+    if (listener.manageable !== undefined && typeof listener.manageable !== 'boolean') throw new Error('接管 snapshot 包含无效可管理标记');
+    if (listener.elevationRequired !== undefined && typeof listener.elevationRequired !== 'boolean') throw new Error('接管 snapshot 包含无效权限标记');
+    if (listener.processName !== undefined && typeof listener.processName !== 'string') throw new Error('接管 snapshot 包含无效进程名');
+    if (listener.serviceName !== undefined && typeof listener.serviceName !== 'string') throw new Error('接管 snapshot 包含无效服务名');
+    if (listener.serviceLookup !== undefined && listener.serviceLookup !== 'known' && listener.serviceLookup !== 'none' && listener.serviceLookup !== 'unavailable') throw new Error('接管 snapshot 包含无效服务识别状态');
+    if (listener.rule !== undefined) {
+      if (!listener.rule || typeof listener.rule !== 'object') throw new Error('接管 snapshot 包含无效 Windows 端口规则');
+      const rule = listener.rule as Record<string, unknown>;
+      if (typeof rule.family !== 'string' || typeof rule.listenAddress !== 'string' || !Number.isInteger(rule.listenPort) || typeof rule.connectAddress !== 'string' || !Number.isInteger(rule.connectPort) || typeof rule.ruleKey !== 'string') throw new Error('接管 snapshot 包含不完整 Windows 端口规则');
+    }
+    return listener as TakeoverSnapshot['listeners'][number];
+  });
+  return { port: record.port as number, listeners };
 }
