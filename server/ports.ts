@@ -52,6 +52,7 @@ export interface ProcessGroupScan {
 }
 
 export async function findListeningPids(port: number): Promise<number[]> {
+  if (process.platform === 'darwin') return findListeningPidsFromLsof(port);
   try {
     const { stdout } = await execFileAsync('ss', ['-ltnp', `sport = :${port}`]);
     const pids = [...stdout.matchAll(/pid=(\d+)/g)].map((match) => Number.parseInt(match[1], 10));
@@ -60,6 +61,19 @@ export async function findListeningPids(port: number): Promise<number[]> {
     // `ss` is not installed in every WSL distribution. Fall through to /proc.
   }
   return findListeningPidsFromProc(port);
+}
+
+/** macOS has no Linux /proc socket table, so query its built-in lsof instead. */
+async function findListeningPidsFromLsof(port: number): Promise<number[]> {
+  try {
+    const { stdout } = await execFileAsync('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t']);
+    return uniquePids(stdout);
+  } catch (error) {
+    const detail = error as NodeJS.ErrnoException;
+    // lsof exits 1 when no process is listening; that is a normal status.
+    if (detail.code === '1') return [];
+    return [];
+  }
 }
 
 /**

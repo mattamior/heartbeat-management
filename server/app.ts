@@ -1,10 +1,13 @@
+import { execFile } from 'node:child_process';
 import { existsSync, statSync } from 'node:fs';
+import { promisify } from 'node:util';
 import { isAbsolute, join, relative, resolve, sep } from 'node:path';
 import Fastify, { type FastifyInstance } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import { ZodError } from 'zod';
 import type { ProjectConfig } from '../shared/types.js';
 import { ProjectStore } from './config.js';
+import { inspectProjectDirectory } from './project-inspection.js';
 import { ProcessOperationError, ProjectProcessManager, type ExtendedProjectStatus, type TakeoverSnapshot } from './process-manager.js';
 
 export interface AppOptions {
@@ -12,6 +15,14 @@ export interface AppOptions {
   store?: ProjectStore;
   manager?: ProjectProcessManager;
   staticDir?: string;
+}
+
+const execFileAsync = promisify(execFile);
+
+interface CommandFailure extends Error {
+  code?: string | number;
+  killed?: boolean;
+  signal?: string | null;
 }
 
 export async function buildApp(options: AppOptions = {}): Promise<FastifyInstance> {
@@ -55,7 +66,7 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
         restoreFailed: error.restoreFailed,
         restoreResults: error.restoreResults
       };
-      return reply.code(statusCode).send({
+      reply.code(statusCode).send({
         message,
         code: error.code,
         phase: error.phase,
@@ -70,6 +81,7 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
         details: failure,
         refreshRequired: error.code === 'TAKEOVER_STALE'
       });
+      return;
     }
     reply.code(validation ? 400 : 400).send({ message });
   });
@@ -88,6 +100,17 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
   manager.on('log', (projectId, entry) => { void broadcast('log', { projectId, entry }); });
 
   app.get('/api/projects', async () => ({ projects: await views() }));
+  app.post('/api/project-directory-picker', async () => ({ directory: await chooseProjectDirectory() }));
+  app.post<{ Body: { directory?: unknown } }>('/api/project-inspection', async (request) => {
+    if (typeof request.body?.directory !== 'string' || !request.body.directory.trim()) throw new Error('请选择项目目录');
+    return inspectProjectDirectory(request.body.directory);
+  });
+  app.post<{ Body: unknown }>('/api/projects', async (request) => {
+    const project = await store.create(request.body);
+    const view = { ...project, status: await manager.status(project) };
+    await broadcast('status', await views());
+    return view;
+  });
   app.put<{ Params: { id: string }; Body: unknown }>('/api/projects/:id', async (request) => {
     const project = await store.update(request.params.id, request.body);
     return { ...project, status: await manager.status(project) };
@@ -168,6 +191,19 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
     });
   }
   return app;
+}
+
+async function chooseProjectDirectory(): Promise<string | undefined> {
+  if (process.platform !== 'darwin') throw new Error('当前系统暂不支持原生目录选择器；请手动填写项目目录。');
+  try {
+    const { stdout } = await execFileAsync('osascript', ['-e', 'POSIX path of (choose folder with prompt "选择项目目录")'], { timeout: 120_000 });
+    const directory = stdout.trim();
+    return directory || undefined;
+  } catch (error) {
+    const detail = error as CommandFailure;
+    if (detail.killed || detail.signal || detail.code === 1) return undefined;
+    throw new Error('无法打开系统目录选择器');
+  }
 }
 
 function parseTakeoverSnapshot(value: unknown): TakeoverSnapshot {

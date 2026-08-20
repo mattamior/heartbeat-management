@@ -143,6 +143,18 @@ export interface Project {
   status: ServiceStatus;
 }
 
+export interface ProjectSuggestion {
+  directory: string;
+  id: string;
+  name: string;
+  command?: string;
+  packageManager?: 'npm' | 'yarn' | 'pnpm';
+  port?: number;
+  url?: string;
+  readmePath?: string;
+  missing: string[];
+}
+
 type UnknownRecord = Record<string, unknown>;
 
 export class ApiError extends Error {
@@ -585,6 +597,50 @@ export async function getProjects(): Promise<Project[]> {
   if (Array.isArray(payload)) return payload.map(normalizeProject);
   const projects = asRecord(payload).projects;
   return Array.isArray(projects) ? projects.map(normalizeProject) : [];
+}
+
+export async function chooseProjectDirectory(): Promise<string | undefined> {
+  const payload = await request<unknown>('/api/project-directory-picker', { method: 'POST' });
+  const directory = asString(asRecord(payload).directory).trim();
+  return directory || undefined;
+}
+
+export async function inspectProjectDirectory(directory: string): Promise<ProjectSuggestion> {
+  const payload = asRecord(await request<unknown>('/api/project-inspection', {
+    method: 'POST',
+    body: JSON.stringify({ directory }),
+  }));
+  return {
+    directory: asString(payload.directory).trim(),
+    id: asString(payload.id).trim(),
+    name: asString(payload.name).trim(),
+    command: asString(payload.command).trim() || undefined,
+    packageManager: ['npm', 'yarn', 'pnpm'].includes(asString(payload.packageManager))
+      ? asString(payload.packageManager) as ProjectSuggestion['packageManager']
+      : undefined,
+    port: asNumber(payload.port),
+    url: asString(payload.url).trim() || undefined,
+    readmePath: asString(payload.readmePath).trim() || undefined,
+    missing: Array.isArray(payload.missing) ? payload.missing.filter((value): value is string => typeof value === 'string') : [],
+  };
+}
+
+export async function createProject(config: Omit<ProjectConfig, 'supported' | 'unsupportedReason'>): Promise<Project> {
+  const project = await request<unknown>('/api/projects', {
+    method: 'POST',
+    body: JSON.stringify({
+      id: config.id,
+      name: config.name,
+      kind: 'web',
+      cwd: config.directory,
+      command: config.startCommand,
+      packageManager: config.packageManager,
+      port: config.port,
+      url: config.url,
+      env: config.env,
+    }),
+  });
+  return normalizeProject(asRecord(project).project ?? project);
 }
 
 export async function updateProject(id: string, config: Omit<ProjectConfig, 'id'>): Promise<Project> {

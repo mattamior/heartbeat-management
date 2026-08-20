@@ -5,7 +5,11 @@ import {
   ProjectConfig,
   ProjectStatusKind,
   ProcessSnapshot,
+  ProjectSuggestion,
+  chooseProjectDirectory,
+  createProject,
   getLogs,
+  inspectProjectDirectory,
   getProjects,
   parseStreamEvent,
   processSnapshotKey,
@@ -78,6 +82,7 @@ export function App() {
   const [loading, setLoading] = useState(true);
   const [connection, setConnection] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
   const [notice, setNotice] = useState<Notice>(null);
+  const [addingProject, setAddingProject] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -148,6 +153,7 @@ export function App() {
         </div>
         <div className="header-actions">
           <span className={`connection ${connection}`}><i />{connection === 'connected' ? '实时同步中' : connection === 'connecting' ? '正在连接' : '实时连接断开'}</span>
+          <button className="button primary" onClick={() => setAddingProject(true)}>增加项目</button>
           <button className="button secondary" onClick={() => void refresh()} disabled={loading}>刷新状态</button>
         </div>
       </header>
@@ -177,8 +183,68 @@ export function App() {
           {filteredProjects.map((project) => <ProjectCard key={project.config.id} project={project} onAction={invokeAction} onSaved={applyProject} onError={(text) => setNotice({ tone: 'error', text })} />)}
         </section>
       )}
+      {addingProject && <AddProjectDialog
+        onCancel={() => setAddingProject(false)}
+        onCreated={(project) => { applyProject(project); setAddingProject(false); setNotice({ tone: 'info', text: `${project.config.name} 已添加` }); }}
+        onError={(text) => setNotice({ tone: 'error', text })}
+      />}
     </main>
   );
+}
+
+function AddProjectDialog({ onCancel, onCreated, onError }: { onCancel: () => void; onCreated: (project: Project) => void; onError: (message: string) => void }) {
+  const [selecting, setSelecting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ id: '', name: '', directory: '', startCommand: 'npm run dev', packageManager: 'npm', port: '', url: '', envText: '' });
+
+  const applySuggestion = (suggestion: ProjectSuggestion) => {
+    setForm((current) => ({
+      ...current,
+      directory: suggestion.directory,
+      id: suggestion.id,
+      name: suggestion.name,
+      startCommand: suggestion.command ?? '',
+      packageManager: suggestion.packageManager ?? '',
+      port: suggestion.port?.toString() ?? '',
+      url: suggestion.url ?? '',
+    }));
+    if (suggestion.missing.length > 0) onError(`README 未能识别：${suggestion.missing.join('、')}。请补充后再添加。`);
+  };
+  const selectDirectory = async () => {
+    setSelecting(true);
+    try {
+      const directory = await chooseProjectDirectory();
+      if (!directory) return;
+      applySuggestion(await inspectProjectDirectory(directory));
+    } catch (error) { onError(`读取项目 README 失败：${describeError(error)}`); } finally { setSelecting(false); }
+  };
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    const port = Number(form.port);
+    if (!Number.isInteger(port) || port < 1 || port > 65535) { onError('端口必须在 1 到 65535 之间。'); return; }
+    setSubmitting(true);
+    try {
+      onCreated(await createProject({
+        id: form.id.trim(), name: form.name.trim(), directory: form.directory, startCommand: form.startCommand.trim(),
+        packageManager: form.packageManager, port, url: form.url.trim(), env: parseEnv(form.envText), kind: 'web',
+      }));
+    } catch (error) { onError(`增加项目失败：${describeError(error)}`); } finally { setSubmitting(false); }
+  };
+
+  return <div className="dialog-backdrop" role="presentation"><section className="dialog" role="dialog" aria-modal="true" aria-labelledby="add-project-title">
+    <h3 id="add-project-title">增加项目</h3>
+    <p>可选择任意本机项目目录。选定后会读取该目录顶层的 README 并自动填写可识别的配置；未明确写在 README 中的必填项需要手动补充。</p>
+    <form className="config-editor" onSubmit={(event) => void submit(event)}>
+      <div className="directory-picker"><label>项目目录<input required readOnly value={form.directory} placeholder="点击右侧按钮选择目录" /></label><button type="button" className="button secondary" onClick={() => void selectDirectory()} disabled={selecting || submitting}>{selecting ? '正在读取…' : '选择项目目录'}</button></div>
+      <label>项目 ID<input required pattern="[a-z0-9][a-z0-9-]{0,63}" value={form.id} onChange={(event) => setForm({ ...form, id: event.target.value })} disabled={submitting} /></label>
+      <label>名称<input required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} disabled={submitting} /></label>
+      <label>启动命令<input required value={form.startCommand} onChange={(event) => setForm({ ...form, startCommand: event.target.value })} disabled={submitting} /></label>
+      <div className="form-row"><label>包管理器<select value={form.packageManager} onChange={(event) => setForm({ ...form, packageManager: event.target.value })} disabled={submitting}><option value="npm">npm</option><option value="yarn">yarn</option><option value="pnpm">pnpm</option></select></label><label>端口<input required inputMode="numeric" value={form.port} onChange={(event) => setForm({ ...form, port: event.target.value })} disabled={submitting} /></label></div>
+      <label>访问链接<input required type="url" placeholder={form.port ? `http://127.0.0.1:${form.port}` : 'http://127.0.0.1:3000'} value={form.url} onChange={(event) => setForm({ ...form, url: event.target.value })} disabled={submitting} /></label>
+      <label>环境变量（可选，每行 KEY=VALUE）<textarea value={form.envText} onChange={(event) => setForm({ ...form, envText: event.target.value })} rows={3} disabled={submitting} /></label>
+      <div className="dialog-actions"><button type="button" className="button secondary" onClick={onCancel} disabled={submitting}>取消</button><button className="button primary" disabled={selecting || submitting || !form.directory}>{submitting ? '正在添加…' : '添加项目'}</button></div>
+    </form>
+  </section></div>;
 }
 
 function ProjectCard({ project, onAction, onSaved, onError }: { project: Project; onAction: (project: Project, action: ProjectAction) => Promise<void>; onSaved: (project: Project) => void; onError: (message: string) => void }) {

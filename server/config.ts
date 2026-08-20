@@ -1,8 +1,8 @@
 import { realpathSync } from 'node:fs';
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve, sep } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { z } from 'zod';
-import { PROJECT_ROOT, type ProjectConfig } from '../shared/types.js';
+import { DEPLOYMENT_PROJECT_ROOT, PROJECT_ROOT, type ProjectConfig } from '../shared/types.js';
 
 const envSchema = z.record(z.string().regex(/^[A-Za-z_][A-Za-z0-9_]*$/), z.string().max(4096));
 const projectFieldsSchema = z.object({
@@ -34,23 +34,22 @@ const baseProjectSchema = projectFieldsSchema.superRefine((project, ctx) => {
 
 export const projectSchema = baseProjectSchema.transform((project) => ({
   ...project,
-  cwd: assertSiblingProjectPath(project.cwd)
+  cwd: assertProjectPath(project.cwd)
 }));
 export const projectUpdateSchema = projectFieldsSchema.omit({ id: true }).partial().strict();
 
-export function assertSiblingProjectPath(candidate: string): string {
-  const normalizedRoot = realpathSync(resolve(PROJECT_ROOT));
+export function assertProjectPath(candidate: string): string {
   let resolvedProject: string;
   try {
     resolvedProject = realpathSync(resolve(candidate));
   } catch {
     throw new Error(`工作目录不存在或无法解析: ${candidate}`);
   }
-  if (!resolvedProject.startsWith(`${normalizedRoot}${sep}`) || dirname(resolvedProject) !== normalizedRoot) {
-    throw new Error(`工作目录必须是 ${PROJECT_ROOT} 的直接子目录`);
-  }
   return resolvedProject;
 }
+
+/** @deprecated Project directories are no longer limited to a fixed root. */
+export const assertSiblingProjectPath = assertProjectPath;
 
 export class ProjectStore {
   constructor(
@@ -63,8 +62,9 @@ export class ProjectStore {
       return this.parse(await readFile(this.configFile, 'utf8'));
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-      const defaults = await readFile(this.defaultsFile, 'utf8');
-      const projects = this.parse(defaults);
+      const projects = PROJECT_ROOT === resolve(DEPLOYMENT_PROJECT_ROOT)
+        ? this.parse(await readFile(this.defaultsFile, 'utf8'))
+        : [];
       await this.write(projects);
       return projects;
     }
@@ -77,6 +77,15 @@ export class ProjectStore {
     if (index < 0) throw new Error('项目不存在');
     const candidate = projectSchema.parse({ ...projects[index], ...partial, id });
     projects[index] = candidate;
+    await this.write(projects);
+    return candidate;
+  }
+
+  async create(input: unknown): Promise<ProjectConfig> {
+    const candidate = projectSchema.parse(input);
+    const projects = await this.read();
+    if (projects.some((project) => project.id === candidate.id)) throw new Error(`项目 ID 已存在: ${candidate.id}`);
+    projects.push(candidate);
     await this.write(projects);
     return candidate;
   }
