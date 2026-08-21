@@ -34,7 +34,6 @@ async function appWithTemporaryService(): Promise<{ server: FastifyInstance; man
     id: 'temporary-service',
     name: 'Temporary Service',
     kind: 'web',
-    // The dashboard repository itself is a direct child of PROJECT_ROOT, so config validation remains active.
     cwd: process.cwd(),
     command: `node -e "require('node:http').createServer((_, response) => response.end('ok')).listen(${port}, '127.0.0.1')"`,
     packageManager: 'npm',
@@ -50,21 +49,24 @@ async function appWithTemporaryService(): Promise<{ server: FastifyInstance; man
 }
 
 describe('HTTP API', () => {
-  it('lists defaults in the documented envelope and updates a project', async () => {
+  it('starts empty and persists a manually added project', async () => {
     const server = await app();
     const listed = await server.inject('/api/projects');
     expect(listed.statusCode).toBe(200);
-    expect(listed.json().projects).toHaveLength(10);
-    const updated = await server.inject({ method: 'PUT', url: '/api/projects/bbg-admin', payload: { name: 'Admin Control' } });
+    expect(listed.json().projects).toEqual([]);
+    const directory = await mkdtemp(join(tmpdir(), 'heartbeat-api-project-'));
+    const created = await server.inject({ method: 'POST', url: '/api/projects', payload: { id: 'manual-project', name: 'Manual Project', kind: 'web', cwd: directory, command: 'npm run dev', packageManager: 'npm', port: 3000, url: 'http://127.0.0.1:3000' } });
+    expect(created.statusCode).toBe(200);
+    const updated = await server.inject({ method: 'PUT', url: '/api/projects/manual-project', payload: { name: 'Renamed Project' } });
     expect(updated.statusCode).toBe(200);
-    expect(updated.json().name).toBe('Admin Control');
+    expect(updated.json().name).toBe('Renamed Project');
   });
 
   it('rejects an invalid directory update and requires explicit takeover confirmation', async () => {
-    const server = await app();
-    const invalid = await server.inject({ method: 'PUT', url: '/api/projects/bbg-admin', payload: { cwd: '/tmp/nope' } });
+    const { server, project } = await appWithTemporaryService();
+    const invalid = await server.inject({ method: 'PUT', url: `/api/projects/${project.id}`, payload: { cwd: '/tmp/nope' } });
     expect(invalid.statusCode).toBe(400);
-    const takeover = await server.inject({ method: 'POST', url: '/api/projects/bbg-admin/takeover', payload: {} });
+    const takeover = await server.inject({ method: 'POST', url: `/api/projects/${project.id}/takeover`, payload: {} });
     expect(takeover.statusCode).toBe(400);
     expect(takeover.json().message).toContain('confirm: true');
   });

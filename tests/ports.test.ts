@@ -1,6 +1,6 @@
 import { createServer } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
-import { assertPortCanBind, findListeningPids, parseProcTcpListeningInodes } from '../server/ports.js';
+import { assertPortCanBind, findListeningPids, inspectProcess, parseProcTcpListeningInodes, processGroupId, processGroupMembers } from '../server/ports.js';
 import { parsePortProxyRules, WindowsPortManager, type WindowsCommandExecutor } from '../server/windows-ports.js';
 
 const servers: ReturnType<typeof createServer>[] = [];
@@ -46,6 +46,26 @@ describe('assertPortCanBind', () => {
       '   1: 0100007F:687C 00000000:0000 01 00000000:00000000 00:00000000 00000000  1000 0 999999999 1 0000000000000000 100 0 0 10 0'
     ].join('\n');
     expect(parseProcTcpListeningInodes(contents, Number.parseInt('687B', 16))).toEqual(new Set(['246813579']));
+  });
+});
+
+describe.runIf(process.platform === 'darwin')('macOS process inspection', () => {
+  it('reads the listener identity fields needed to recognize a managed child', async () => {
+    const snapshot = await inspectProcess(process.pid);
+    expect(snapshot).toMatchObject({
+      pid: process.pid,
+      cwd: process.cwd(),
+      visibility: 'visible'
+    });
+    expect(snapshot?.startedAt).toBeTruthy();
+    expect(snapshot?.pgid).toBeGreaterThan(1);
+    expect(snapshot?.command).toContain('node');
+  });
+
+  it('scans the process group reported by ps', async () => {
+    const pgid = await processGroupId(process.pid);
+    expect(pgid).toBeTruthy();
+    expect(await processGroupMembers(pgid!)).toContain(process.pid);
   });
 });
 

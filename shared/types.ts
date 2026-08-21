@@ -1,15 +1,3 @@
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
-
-export const DEPLOYMENT_PROJECT_ROOT = '/home/bbg/bbg-projects';
-
-/**
- * The deployed host keeps projects under /home/bbg/bbg-projects. A local
- * checkout instead manages its sibling directories unless explicitly set.
- */
-export const PROJECT_ROOT = resolve(process.env.HEARTBEAT_PROJECT_ROOT
-  ?? (existsSync(DEPLOYMENT_PROJECT_ROOT) ? DEPLOYMENT_PROJECT_ROOT : resolve(process.cwd(), '..')));
-
 export type PackageManager = 'npm' | 'yarn' | 'pnpm';
 export type ProjectKind = 'web' | 'unsupported';
 export type ProjectState = 'managed' | 'external' | 'stopped' | 'failed' | 'conflict' | 'unsupported' | 'taking-over';

@@ -1,8 +1,8 @@
 import { realpathSync } from 'node:fs';
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { z } from 'zod';
-import { DEPLOYMENT_PROJECT_ROOT, PROJECT_ROOT, type ProjectConfig } from '../shared/types.js';
+import type { ProjectConfig } from '../shared/types.js';
 
 const envSchema = z.record(z.string().regex(/^[A-Za-z_][A-Za-z0-9_]*$/), z.string().max(4096));
 const projectFieldsSchema = z.object({
@@ -52,19 +52,14 @@ export function assertProjectPath(candidate: string): string {
 export const assertSiblingProjectPath = assertProjectPath;
 
 export class ProjectStore {
-  constructor(
-    readonly configFile: string,
-    readonly defaultsFile = join(process.cwd(), 'data', 'projects.defaults.json')
-  ) {}
+  constructor(readonly configFile: string) {}
 
   async read(): Promise<ProjectConfig[]> {
     try {
       return this.parse(await readFile(this.configFile, 'utf8'));
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-      const projects = PROJECT_ROOT === resolve(DEPLOYMENT_PROJECT_ROOT)
-        ? this.parse(await readFile(this.defaultsFile, 'utf8'))
-        : [];
+      const projects: ProjectConfig[] = [];
       await this.write(projects);
       return projects;
     }

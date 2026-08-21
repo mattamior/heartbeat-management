@@ -1,4 +1,4 @@
-import { execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { readdir, readFile, readlink, realpath } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { promisify } from 'node:util';
@@ -104,6 +104,7 @@ export async function inspectListeningProcesses(port: number): Promise<Listening
 
 export async function inspectProcess(pid: number): Promise<ProcessSnapshot | undefined> {
   if (!Number.isSafeInteger(pid) || pid <= 1) return undefined;
+  if (process.platform === 'darwin') return inspectDarwinProcess(pid);
   try {
     const stat = await readFile(`/proc/${pid}/stat`, 'utf8');
     const commandEnd = stat.lastIndexOf(')');
@@ -131,6 +132,33 @@ export async function inspectProcess(pid: number): Promise<ProcessSnapshot | und
   }
 }
 
+/** macOS exposes process metadata through ps and the working directory through lsof. */
+async function inspectDarwinProcess(pid: number): Promise<ProcessSnapshot | undefined> {
+  try {
+    const [{ stdout: processRow }, { stdout: cwdRow }] = await Promise.all([
+      execFileAsync('ps', ['-p', String(pid), '-o', 'pid=', '-o', 'pgid=', '-o', 'lstart=', '-o', 'command=']),
+      execFileAsync('lsof', ['-a', '-p', String(pid), '-d', 'cwd', '-Fn'])
+    ]);
+    const match = /^\s*(\d+)\s+(\d+)\s+(.{24})\s*(.*)$/m.exec(processRow);
+    if (!match) return undefined;
+    const pgid = Number.parseInt(match[2], 10);
+    const command = match[4].trim().slice(0, 1000);
+    const cwdPath = cwdRow.split('\n').find((line) => line.startsWith('n'))?.slice(1);
+    const cwd = cwdPath ? await realpath(cwdPath).catch(() => cwdPath) : undefined;
+    return {
+      pid,
+      startedAt: match[3].trim() || undefined,
+      cwd,
+      command: command || undefined,
+      commandSummary: command || undefined,
+      pgid: Number.isSafeInteger(pgid) && pgid > 1 ? pgid : undefined,
+      visibility: 'visible'
+    };
+  } catch {
+    return undefined;
+  }
+}
+
 export async function processGroupMembers(pgid: number): Promise<number[]> {
   return (await scanProcessGroup(pgid)).pids;
 }
@@ -142,6 +170,7 @@ export async function processGroupMembers(pgid: number): Promise<number[]> {
  */
 export async function scanProcessGroup(pgid: number): Promise<ProcessGroupScan> {
   if (!Number.isSafeInteger(pgid) || pgid <= 1) return { pids: [], complete: false };
+  if (process.platform === 'darwin') return scanDarwinProcessGroup(pgid);
   let entries;
   try { entries = await readdir('/proc', { withFileTypes: true }); }
   catch { return { pids: [], complete: false }; }
@@ -156,6 +185,33 @@ export async function scanProcessGroup(pgid: number): Promise<ProcessGroupScan> 
     pids: members.flatMap((pid) => typeof pid === 'number' ? [pid] : []).sort((a, b) => a - b),
     complete
   };
+}
+
+async function scanDarwinProcessGroup(pgid: number): Promise<ProcessGroupScan> {
+  try {
+    const stdout = await runDetachedCommand('ps', ['-axo', 'pid=,pgid=']);
+    const pids = stdout.split('\n').flatMap((line) => {
+      const match = /^\s*(\d+)\s+(\d+)$/.exec(line);
+      if (!match) return [];
+      const pid = Number.parseInt(match[1], 10);
+      const group = Number.parseInt(match[2], 10);
+      return group === pgid && Number.isSafeInteger(pid) && pid > 1 ? [pid] : [];
+    }).sort((a, b) => a - b);
+    return { pids, complete: true };
+  } catch {
+    return { pids: [], complete: false };
+  }
+}
+
+function runDetachedCommand(file: string, args: string[]): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(file, args, { detached: true, stdio: ['ignore', 'pipe', 'ignore'] });
+    let stdout = '';
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', (chunk: string) => { stdout += chunk; });
+    child.once('error', reject);
+    child.once('exit', (code) => code === 0 ? resolve(stdout) : reject(new Error(`${file} exited with code ${code ?? 'signal'}`)));
+  });
 }
 
 async function findListeningPidsFromProc(port: number): Promise<number[]> {

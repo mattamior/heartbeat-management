@@ -1,6 +1,7 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import { createServer } from 'node:net';
 import { mkdtemp } from 'node:fs/promises';
+import { realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -22,7 +23,7 @@ afterEach(async () => {
 
 function projectFor(cwd: string, port: number): ProjectConfig {
   return {
-    id: `test-service-${port}`, name: 'Test Service', kind: 'web', cwd,
+    id: `test-service-${port}`, name: 'Test Service', kind: 'web', cwd: realpathSync(cwd),
     command: `node -e "require('node:http').createServer((_, res) => res.end('ok')).listen(${port}, '127.0.0.1')"`,
     packageManager: 'npm', port, url: `http://127.0.0.1:${port}`
   };
@@ -116,7 +117,7 @@ describe('ProjectProcessManager', () => {
     expect(status.state).toBe('external');
     expect(status.pid).toBe(external.pid);
     expect(status.listeners).toHaveLength(1);
-    expect(status.listeners[0]).toMatchObject({ pid: external.pid, cwd, visibility: 'visible', groupComplete: true });
+    expect(status.listeners[0]).toMatchObject({ pid: external.pid, cwd: project.cwd, visibility: 'visible', groupComplete: true });
     await manager.takeover(project, { port, listeners: status.listeners });
     await eventually(async () => expect((await manager.status(project)).state).toBe('managed'));
   });

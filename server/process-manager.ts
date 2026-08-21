@@ -629,10 +629,12 @@ async function validateSnapshot(snapshot: TakeoverSnapshot, current: ListeningPr
       windows.push({ candidate });
       continue;
     }
+    if (listener.pgid === managerPgid || listener.groupPids?.includes(process.pid)) {
+      throw new ProcessOperationError(`拒绝接管进程组 ${listener.pgid ?? '未知'}：目标包含管理器自身进程`, 'TAKEOVER_SELF_GROUP', 'validate', [], '接管目标与当前管理器进程组重叠，未执行任何终止操作。');
+    }
     if (listener.visibility !== 'visible' || !listener.groupComplete || !listener.pgid || !listener.groupPids?.length) throw new ProcessOperationError(`拒绝接管 PID ${listener.pid}：进程组成员或工作目录无法完整确认`, 'TAKEOVER_UNSAFE_GROUP', 'validate', [], '检测到不可见或不完整的进程组；请手动停止服务后重试。');
     if (!isWithinProject(listener.cwd, expectedCwd)) throw new ProcessOperationError(`拒绝接管 PID ${listener.pid}：其工作目录无法确认属于 ${expectedCwd}`, 'TAKEOVER_CROSS_DIRECTORY', 'validate', [], '检测到跨目录进程，未执行任何终止操作。');
     if (listener.groupPids.some((pid) => !Number.isSafeInteger(pid) || pid <= 1)) throw new ProcessOperationError(`拒绝接管 PID ${listener.pid}：进程组成员清单不完整`, 'TAKEOVER_UNSAFE_GROUP', 'validate');
-    if (listener.pgid === managerPgid || listener.groupPids.includes(process.pid)) throw new ProcessOperationError(`拒绝接管进程组 ${listener.pgid ?? '未知'}：目标包含管理器自身进程`, 'TAKEOVER_SELF_GROUP', 'validate', [], '接管目标与当前管理器进程组重叠，未执行任何终止操作。');
     if (!groups.has(listener.pgid)) groups.set(listener.pgid, { pgid: listener.pgid, members: [] });
   }
   // Re-read every member, not only the process that owns the listening socket.
