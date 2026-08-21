@@ -8,7 +8,7 @@ import { ZodError } from 'zod';
 import type { ProjectConfig } from '../shared/types.js';
 import { ProjectStore } from './config.js';
 import { inspectProjectDirectory } from './project-inspection.js';
-import { ProcessOperationError, ProjectProcessManager, type ExtendedProjectStatus, type TakeoverSnapshot } from './process-manager.js';
+import { ProcessOperationError, ProjectProcessManager, RuntimePreflightError, type ExtendedProjectStatus, type TakeoverSnapshot } from './process-manager.js';
 
 export interface AppOptions {
   configFile?: string;
@@ -81,6 +81,10 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
         details: failure,
         refreshRequired: error.code === 'TAKEOVER_STALE'
       });
+      return;
+    }
+    if (error instanceof RuntimePreflightError) {
+      reply.code(400).send({ message, code: 'RUNTIME_UNAVAILABLE', diagnostics: error.diagnostic });
       return;
     }
     reply.code(validation ? 400 : 400).send({ message });

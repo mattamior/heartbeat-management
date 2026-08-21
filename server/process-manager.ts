@@ -15,6 +15,7 @@ import {
 } from './ports.js';
 import { isSupportedPortProxyFamily, WindowsPortManager, type WindowsListenerCandidate } from './windows-ports.js';
 import type { PortProxyRule } from '../shared/types.js';
+import { probeRuntime, type RuntimeProbeResult } from './runtime-probe.js';
 
 export interface TakeoverSnapshot {
   port: number;
@@ -83,6 +84,15 @@ export interface ProjectProcessManagerOptions {
   assertPortCanBind?: typeof assertPortCanBind;
   /** Windows/WSL bridge; disabled automatically where Windows commands are unavailable. */
   windows?: WindowsPortManager;
+  /** Overrides runtime discovery in tests. Production uses the launch shell. */
+  probeRuntime?: (packageManager: ProjectConfig['packageManager']) => Promise<RuntimeProbeResult>;
+}
+
+export class RuntimePreflightError extends Error {
+  constructor(message: string, public readonly diagnostic: string) {
+    super(message);
+    this.name = 'RuntimePreflightError';
+  }
 }
 
 interface VerifiedGroup {
@@ -120,11 +130,13 @@ export class ProjectProcessManager extends EventEmitter {
   private readonly takeoverProgress = new Map<string, TakeoverProgress>();
   private readonly canBind: typeof assertPortCanBind;
   private readonly windows: WindowsPortManager;
+  private readonly runtimeProbe: NonNullable<ProjectProcessManagerOptions['probeRuntime']>;
 
   constructor(options: ProjectProcessManagerOptions = {}) {
     super();
     this.canBind = options.assertPortCanBind ?? assertPortCanBind;
     this.windows = options.windows ?? new WindowsPortManager();
+    this.runtimeProbe = options.probeRuntime ?? probeRuntime;
   }
 
   async status(project: ProjectConfig): Promise<ExtendedProjectStatus> {
@@ -186,10 +198,7 @@ export class ProjectProcessManager extends EventEmitter {
     await this.canBind(project.port);
     await this.preflight(project);
     const logs = new LogBuffer();
-    const command = [
-      'if [ -s "$NVM_DIR/nvm.sh" ]; then . "$NVM_DIR/nvm.sh"; elif [ -s "$HOME/.nvm/nvm.sh" ]; then . "$HOME/.nvm/nvm.sh"; fi',
-      `exec ${project.command}`
-    ].join('; ');
+    const command = [runtimeBootstrap(packageManagerExecutable(project.packageManager)), `exec ${project.command}`].join('; ');
     const child = spawn('bash', ['-lc', command], { cwd: project.cwd, env: { ...process.env, ...project.env }, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
     if (!child.pid) throw new ProcessOperationError('无法创建服务进程', 'START_FAILED', 'operation');
     const record: ManagedProcess = { child, pid: child.pid, startedAt: new Date().toISOString(), logs };
@@ -522,13 +531,10 @@ export class ProjectProcessManager extends EventEmitter {
 
   private async preflight(project: ProjectConfig): Promise<void> {
     await access(project.cwd, constants.R_OK | constants.X_OK).catch(() => { throw new Error(`工作目录不可访问: ${project.cwd}`); });
-    const executable = project.packageManager === 'pnpm' ? 'pnpm' : project.packageManager === 'yarn' ? 'yarn' : 'npm';
-    const checks = await Promise.all(['node', executable].map(async (command) => {
-      const process = spawn('bash', ['-lc', `command -v ${command}`], { stdio: 'ignore' });
-      return new Promise<boolean>((resolve) => process.once('exit', (code) => resolve(code === 0)));
-    }));
-    if (!checks[0]) throw new Error('未找到 Node.js；请安装 Node 20 或配置 nvm');
-    if (!checks[1]) throw new Error(`未找到 ${executable}；请安装或在配置中改用可用包管理器`);
+    const executable = packageManagerExecutable(project.packageManager);
+    const runtime = await this.runtimeProbe(project.packageManager);
+    if (!runtime.nodePath) throw new RuntimePreflightError('未找到可用的 Node.js；请安装 Node.js 或配置 nvm。', runtime.diagnostic);
+    if (!runtime.packageManagerPath) throw new RuntimePreflightError(`未找到 ${executable}；请安装或在配置中改用可用包管理器。`, runtime.diagnostic);
   }
 
   private async waitForTakeoverStart(project: ProjectConfig): Promise<void> {
@@ -550,6 +556,14 @@ export class ProjectProcessManager extends EventEmitter {
   }
 
   private emitChange(): void { this.emit('change'); }
+}
+
+function packageManagerExecutable(packageManager: ProjectConfig['packageManager']): 'npm' | 'pnpm' | 'yarn' {
+  return packageManager === 'pnpm' ? 'pnpm' : packageManager === 'yarn' ? 'yarn' : 'npm';
+}
+
+function runtimeBootstrap(executable: 'npm' | 'pnpm' | 'yarn'): string {
+  return `if ! command -v node >/dev/null 2>&1 || ! command -v ${executable} >/dev/null 2>&1; then if [ -s "$NVM_DIR/nvm.sh" ]; then . "$NVM_DIR/nvm.sh"; elif [ -s "$HOME/.nvm/nvm.sh" ]; then . "$HOME/.nvm/nvm.sh"; fi; fi`;
 }
 
 function isWithinProject(cwd: string | undefined, expectedCwd: string): boolean {

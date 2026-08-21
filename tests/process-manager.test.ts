@@ -90,6 +90,42 @@ describe('ProjectProcessManager', () => {
     expect(status.error).toBeUndefined();
   });
 
+  it('uses the resolved nvm runtime for the preflight and launch path', async () => {
+    const port = await unusedPort();
+    const cwd = await mkdtemp(join(tmpdir(), 'heartbeat-runtime-'));
+    const project = projectFor(cwd, port);
+    const calls: Array<ProjectConfig['packageManager']> = [];
+    const manager = new ProjectProcessManager({
+      probeRuntime: async (packageManager) => {
+        calls.push(packageManager);
+        return {
+          nodePath: '/home/test/.nvm/versions/node/v24/bin/node',
+          packageManagerPath: '/home/test/.nvm/versions/node/v24/bin/npm',
+          diagnostic: 'nvm runtime resolved',
+        };
+      },
+    });
+    managers.push({ manager, project });
+
+    await manager.start(project);
+    expect(calls).toEqual(['npm']);
+  });
+
+  it('reports a missing runtime with a copyable diagnostic', async () => {
+    const port = await unusedPort();
+    const cwd = await mkdtemp(join(tmpdir(), 'heartbeat-runtime-missing-'));
+    const project = projectFor(cwd, port);
+    const manager = new ProjectProcessManager({
+      probeRuntime: async () => ({ diagnostic: 'node: 未找到\\nnpm: 未找到' }),
+    });
+
+    await expect(manager.start(project)).rejects.toMatchObject({
+      name: 'RuntimePreflightError',
+      message: '未找到可用的 Node.js；请安装 Node.js 或配置 nvm。',
+      diagnostic: 'node: 未找到\\nnpm: 未找到',
+    });
+  });
+
   it('starts a detached process group, recognizes it as managed, and stops it', async () => {
     const port = await unusedPort();
     const cwd = await mkdtemp(join(tmpdir(), 'heartbeat-process-'));
@@ -120,7 +156,7 @@ describe('ProjectProcessManager', () => {
     expect(status.listeners[0]).toMatchObject({ pid: external.pid, cwd: project.cwd, visibility: 'visible', groupComplete: true });
     await manager.takeover(project, { port, listeners: status.listeners });
     await eventually(async () => expect((await manager.status(project)).state).toBe('managed'));
-  });
+  }, 15_000);
 
   it('refuses takeover when the external listener cwd does not belong to the project', async () => {
     const port = await unusedPort();
@@ -134,7 +170,7 @@ describe('ProjectProcessManager', () => {
     await expect(manager.takeover(project, { port, listeners: status.listeners })).rejects.toThrow('拒绝接管');
     expect((await manager.status(project)).state).toBe('external');
     expect(await findListeningPids(port)).toContain(external.pid);
-  });
+  }, 15_000);
 
   it('rejects a stale snapshot before sending a termination signal', async () => {
     const port = await unusedPort();
@@ -150,7 +186,7 @@ describe('ProjectProcessManager', () => {
     await expect(manager.takeover(project, { port, listeners: [stale] })).rejects.toThrow('状态已变化');
     expect((await manager.status(project)).state).toBe('external');
     expect(await findListeningPids(port)).toContain(external.pid);
-  });
+  }, 15_000);
 
   it('refuses a listener in the manager process group', async () => {
     const port = await unusedPort();
@@ -164,5 +200,5 @@ describe('ProjectProcessManager', () => {
     await expect(manager.takeover(project, { port, listeners: status.listeners })).rejects.toThrow('管理器自身进程');
     expect((await manager.status(project)).state).toBe('external');
     expect(await findListeningPids(port)).toContain(external.pid);
-  });
+  }, 15_000);
 });

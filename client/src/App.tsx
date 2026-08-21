@@ -233,7 +233,7 @@ function AddProjectDialog({ onCancel, onCreated, onError }: { onCancel: () => vo
 
   return <div className="dialog-backdrop" role="presentation"><section className="dialog" role="dialog" aria-modal="true" aria-labelledby="add-project-title">
     <h3 id="add-project-title">增加项目</h3>
-    <p>可选择任意本机项目目录。选定后会读取该目录顶层的 README 并自动填写可识别的配置；未明确写在 README 中的必填项需要手动补充。</p>
+    <p>可选择任意本机项目目录。选定后会优先读取 package.json 与锁文件；仅在缺少信息时使用 README.md。名称默认取自目录，未识别的必填项需要手动补充。</p>
     <form className="config-editor" onSubmit={(event) => void submit(event)}>
       <div className="directory-picker"><label>项目目录<input required readOnly value={form.directory} placeholder="点击右侧按钮选择目录" /></label><button type="button" className="button secondary" onClick={() => void selectDirectory()} disabled={selecting || submitting}>{selecting ? '正在读取…' : '选择项目目录'}</button></div>
       <label>项目 ID<input required pattern="[a-z0-9][a-z0-9-]{0,63}" value={form.id} onChange={(event) => setForm({ ...form, id: event.target.value })} disabled={submitting} /></label>
@@ -293,6 +293,7 @@ function ProjectCard({ project, onAction, onSaved, onError }: { project: Project
       <div><dt>端口</dt><dd>{project.config.port ?? '—'}{project.status.portPids.length > 0 ? ` · ${project.status.portPids.length} 个监听进程` : project.status.pid ? ` · PID ${project.status.pid}` : ''}</dd></div>
       <div><dt>包管理器</dt><dd>{project.config.packageManager || '—'}</dd></div>
       {project.status.message && <div className="detail-wide"><dt>提示</dt><dd>{project.status.message}</dd></div>}
+      {project.status.kind === 'external-running' && <div className="detail-wide external-running-hint"><dt>服务状态</dt><dd>服务已由面板外的进程运行，可直接打开链接。只有需要由 Heartbeat 启停时，才点击“接管服务”。</dd></div>}
       {inProgress && <div className="detail-wide operation-detail"><dt>当前操作</dt><dd>{operationLabel(project.status.operation)}</dd></div>}
       {hasTakeoverCandidates && <div className="detail-wide"><dt>端口监听候选</dt><dd><ListenerList listeners={project.status.listeners} /></dd></div>}
       {project.status.invisiblePort && project.status.listeners.length === 0 && !hasInvisiblePortHint(project.status.message) && <div className="detail-wide invisible-warning"><dt>占用来源不可见</dt><dd>当前运行环境无法读取占用方的进程信息。可能是 Windows 主机服务、端口转发或端口保留；请刷新状态，或由有权限的系统操作释放端口。</dd></div>}
